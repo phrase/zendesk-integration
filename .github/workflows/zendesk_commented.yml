@@ -9,7 +9,7 @@ jobs:
       - uses: actions/github-script@v5
         with:
           script: |
-            ## copy zendesk comment to issue
+            // copy zendesk comment to issue
             payload = context.payload.client_payload
             // split external id to get owner, repo and issue number
             parts = payload.ticket.external_id.split("/")

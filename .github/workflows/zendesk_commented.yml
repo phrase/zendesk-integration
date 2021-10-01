@@ -9,8 +9,9 @@ jobs:
       - uses: actions/github-script@v5
         with:
           script: |
+            payload = context.payload.client_payload
             // split external id to get owner, repo and issue number
-            parts = context.payload.ticket.external_id.split("/")
+            parts = payload.ticket.external_id.split("/")
 
             issue_number = parts[parts.length - 1]
             issue_repo = parts[parts.length - 3]
@@ -20,5 +21,5 @@ jobs:
               issue_number: issue_number,
               owner: issue_owner,
               repo: issue_repo,
-              body: `${context.payload.comment.body}\n\n*Comment by ${context.payload.comment.author}*`
+              body: `${payload.comment.body}\n\n*Comment by ${payload.comment.author}*`
             })

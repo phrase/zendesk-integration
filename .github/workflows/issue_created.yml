@@ -37,6 +37,6 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "**Comment by Tech Support**\n\nOur technical support team got notified and will get in touch with you."
+              body: "Our technical support team got notified and will get in touch with you."
             })
 

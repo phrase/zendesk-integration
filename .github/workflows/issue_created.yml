@@ -15,7 +15,7 @@ jobs:
           ISSUE_URL: ${{ github.event.issue.html_url }}
         run: |
           ## create ticket in zendesk
-          body=$(jq -n --arg body "$ISSUE_BODY" '{body: $body}' | jq .body | tr -d '\\r')
+          body=$(jq -n --arg body "$ISSUE_BODY" '{body: $body}' | jq .body)
           echo "$body"
 
           curl -X POST https://memsource.zendesk.com/api/v2/tickets -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA

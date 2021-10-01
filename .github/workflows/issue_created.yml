@@ -15,14 +15,14 @@ jobs:
           curl -X POST https://memsource.zendesk.com/api/v2/tickets -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
-              "subject":   "${{ github.event.title }}",
+              "subject":   "Github Issue: ${{ github.event.title }}",
               "comment":   { "body": "${{ github.event.body }}" },
               "assignee_id": 383200172360,
               "group_id": 360008131599,
               "brand_id": 360002503940,
               "tags": ["phrase"],
               "external_id": "${{ github.event.html_url }}",
-              "requester": { "locale_id": 1, "name": "${{ github.event.user.login }}" }
+              "requester": { "locale_id": 1, "name": "${{ github.event.user.login }} from Github" }
             }
           }
           DATA

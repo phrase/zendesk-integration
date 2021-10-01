@@ -18,19 +18,16 @@ jobs:
           ISSUE_URL: ${{ github.event.issue.html_url }}
           ISSUE_COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          ## get ticket ID
+          ## add comment to zendesk ticket
           tickets=$(curl "https://memsource.zendesk.com/api/v2/search.json?query=external_id:$ISSUE_URL" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
           ticket_number=$(echo $tickets | jq '.results[0].id')
 
-          echo $ticket_number
-          echo $ISSUE_COMMENT_BODY
-
-          echo "Commenting Zendesk ticket"
+          echo "Commenting Zendesk ticket $ticket_number"
 
           curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$ticket_number -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
-              "comment": { "body": "$ISSUE_COMMENT_BODY" },
+              "comment": { "body": "$ISSUE_COMMENT_BODY" }
             }
           }
           DATA

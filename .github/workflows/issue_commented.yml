@@ -20,11 +20,11 @@ jobs:
           ## get ticket ID
           tickets=$(curl "https://memsource.zendesk.com/api/v2/search.json?query=external_id:$ISSUE_URL" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
 
-          console.log($tickets)
+          echo $tickets
 
           ticket_number=$(echo $tickets | jq tickets[0].id)
 
-          console.log($ticket_number)
+          echo $ticket_number
       # - env:
       #     ZENDESK_BASIC_AUTH: ${{secrets.ZENDESK_BASIC_AUTH}}
       #     TICKET_NUMBER: ${{fromJson(steps.set_var.outputs.tickets).results[0].id}}

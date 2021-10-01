@@ -8,14 +8,17 @@ jobs:
     if: ${{ !github.event.issue.pull_request }}
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo "Comment on issue #${{ github.event.issue.number }}"
+      - env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          echo "Comment on issue #$ISSUE_NUMBER"
       - id: get_ticket
         env:
-          ZENDESK_BASIC_AUTH: ${{secrets.ZENDESK_BASIC_AUTH}}
+          ZENDESK_BASIC_AUTH: ${{ secrets.ZENDESK_BASIC_AUTH }}
+          ISSUE_COMMENT_URL: ${{ github.event.html_url }}
         run: |
           ## get external id
-          external_id=$(echo "${{ github.event.html_url }}" | cut -d '#' -f1)
+          external_id=$(echo "$ISSUE_COMMENT_URL" | cut -d '#' -f1)
 
           ## get ticket ID
           tickets=$(curl "https://memsource.zendesk.com/api/v2/search.json?query=external_id:$external_id" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
@@ -29,11 +32,12 @@ jobs:
       - env:
           ZENDESK_BASIC_AUTH: ${{secrets.ZENDESK_BASIC_AUTH}}
           TICKET_NUMBER: ${{fromJson(steps.set_var.outputs.tickets).results[0].id}}
+          ISSUE_COMMENT_BODY: ${{ github.event.body }}
         run: |
           curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$TICKT_NUMBER -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
-              "comment":   { "body": "${{ github.event.body }}" },
+              "comment":   { "body": "$ISSUE_COMMENT_BODY" },
             }
           }
           DATA

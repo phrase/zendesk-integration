@@ -8,21 +8,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - env:
-          ZENDESK_BASIC_AUTH: ${{secrets.ZENDESK_BASIC_AUTH}}
+          ZENDESK_BASIC_AUTH: ${{ secrets.ZENDESK_BASIC_AUTH }}
+          ISSUE_TITLE: ${{ github.event.title }}
+          ISSUE_BODY: ${{ github.event.body }}
+          ISSUE_USER: ${{ github.event.user.login }}
+          ISSUE_URL: ${{ github.event.html_url }}
         run: |
-          echo "Issue #${{ github.event.number }}"
-
           curl -X POST https://memsource.zendesk.com/api/v2/tickets -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
-              "subject":   "Github Issue: ${{ github.event.title }}",
-              "comment":   { "body": "${{ github.event.body }}" },
+              "subject":   "Github Issue: $ISSUE_TITLE",
+              "comment":   { "body": "$ISSUE_BODY" },
               "assignee_id": 383200172360,
               "group_id": 360008131599,
               "brand_id": 360002503940,
               "tags": ["phrase"],
-              "external_id": "${{ github.event.html_url }}",
-              "requester": { "locale_id": 1, "name": "${{ github.event.user.login }} from Github" }
+              "external_id": "$ISSUE_URL",
+              "requester": { "locale_id": 1, "name": "$ISSUE_USER from Github" }
             }
           }
           DATA

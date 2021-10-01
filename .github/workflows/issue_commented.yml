@@ -22,7 +22,7 @@ jobs:
 
           echo $tickets
 
-          ticket_number=$(echo $tickets | jq tickets[0].id)
+          ticket_number=$(echo $tickets | jq results[0].id)
 
           echo $ticket_number
       # - env:

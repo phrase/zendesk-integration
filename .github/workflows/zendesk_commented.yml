@@ -1,4 +1,7 @@
-on: [repository_dispatch]
+on:
+  repository_dispatch:
+    types:
+      - zendesk-comment
 jobs:
   comment:
     runs-on: ubuntu-latest

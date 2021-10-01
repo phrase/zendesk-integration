@@ -9,10 +9,10 @@ jobs:
     steps:
       - env:
           ZENDESK_BASIC_AUTH: ${{ secrets.ZENDESK_BASIC_AUTH }}
-          ISSUE_TITLE: ${{ github.event.title }}
-          ISSUE_BODY: ${{ github.event.body }}
-          ISSUE_USER: ${{ github.event.user.login }}
-          ISSUE_URL: ${{ github.event.html_url }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_USER: ${{ github.event.issue.user.login }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
         run: |
           curl -X POST https://memsource.zendesk.com/api/v2/tickets -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {

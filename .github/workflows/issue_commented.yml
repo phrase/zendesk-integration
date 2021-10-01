@@ -24,13 +24,13 @@ jobs:
 
           echo "Commenting Zendesk ticket $ticket_number"
 
-          body=$(jq -n --arg body "$ISSUE_COMMENT_BODY" '{body: "[GITHUB_ISSUE_COMMENT]\n\n$body"}' | jq .body | tr -d '\\r')
+          body=$(jq -n --arg body "$ISSUE_COMMENT_BODY" '{body: $body}' | jq .body | tr -d '\\r')
           echo "$body"
 
           curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$ticket_number -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
-              "comment": { "body": $body }
+              "comment": { "body": "[GITHUB_ISSUE_COMMENT]\n\n${body:1:-1}" }
             }
           }
           DATA

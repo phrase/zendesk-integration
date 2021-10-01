@@ -23,14 +23,15 @@ jobs:
           ticket_number=$(echo $tickets | jq '.results[0].id')
 
           echo $ticket_number
+          echo $ISSUE_COMMENT_BODY
+
+          echo "Commenting Zendesk ticket"
 
           curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$ticket_number -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
-              "comment":   { "body": "$ISSUE_COMMENT_BODY" },
+              "comment": { "body": "$ISSUE_COMMENT_BODY" },
             }
           }
           DATA
-
-          echo "Zendesk ticket commented"
 

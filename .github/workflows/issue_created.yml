@@ -14,11 +14,14 @@ jobs:
           ISSUE_USER: ${{ github.event.issue.user.login }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
         run: |
+          ## create ticket in zendesk
+          body=$(echo $ISSUE_BODY | sed 's/\n/\\n/g')
+
           curl -X POST https://memsource.zendesk.com/api/v2/tickets -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
               "subject":   "Github Issue: $ISSUE_TITLE",
-              "comment":   { "body": "[GITHUB_ISSUE_COMMENT]\n\n$ISSUE_BODY" },
+              "comment":   { "body": "[GITHUB_ISSUE_COMMENT]\n\n$body" },
               "assignee_id": 383200172360,
               "group_id": 360008131599,
               "brand_id": 360002503940,

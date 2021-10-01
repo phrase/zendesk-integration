@@ -24,7 +24,7 @@ jobs:
 
           echo "Commenting Zendesk ticket $ticket_number"
 
-          body=$(echo $ISSUE_COMMENT_BODY | | tr -d '\n' '\\n')
+          body=$(echo "${ISSUE_COMMENT_BODY//$'\n'/\\\n}")
           echo $body
 
           curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$ticket_number -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA

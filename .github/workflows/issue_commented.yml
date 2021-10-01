@@ -15,13 +15,10 @@ jobs:
       - id: get_ticket
         env:
           ZENDESK_BASIC_AUTH: ${{ secrets.ZENDESK_BASIC_AUTH }}
-          ISSUE_COMMENT_URL: ${{ github.event.html_url }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
         run: |
-          ## get external id
-          external_id=$(echo "$ISSUE_COMMENT_URL" | cut -d '#' -f1)
-
           ## get ticket ID
-          tickets=$(curl "https://memsource.zendesk.com/api/v2/search.json?query=external_id:$external_id" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
+          tickets=$(curl "https://memsource.zendesk.com/api/v2/search.json?query=external_id:$ISSUE_URL" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
 
           # the following lines are only required for multi line json
           tickets="${tickets//'%'/'%25'}"
@@ -32,7 +29,7 @@ jobs:
       - env:
           ZENDESK_BASIC_AUTH: ${{secrets.ZENDESK_BASIC_AUTH}}
           TICKET_NUMBER: ${{fromJson(steps.set_var.outputs.tickets).results[0].id}}
-          ISSUE_COMMENT_BODY: ${{ github.event.body }}
+          ISSUE_COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
           curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$TICKT_NUMBER -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {

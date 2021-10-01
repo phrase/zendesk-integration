@@ -1,0 +1,21 @@
+on: [repository_dispatch]
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v5
+        with:
+          script: |
+            // split external id to get owner, repo and issue number
+            parts = context.payload.ticket.external_id.split("/")
+
+            issue_number = parts[parts.length - 1]
+            issue_repo = parts[parts.length - 3]
+            issue_owner = parts[parts.length - 4]
+
+            github.rest.issues.createComment({
+              issue_number: issue_number,
+              owner: issue_owner,
+              repo: issue_repo,
+              body: `${context.payload.comment.body}\n\n*Comment by ${context.payload.comment.author}*`
+            })

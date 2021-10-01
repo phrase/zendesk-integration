@@ -27,7 +27,7 @@ jobs:
           curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$ticket_number -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
-              "comment": { "body": "$ISSUE_COMMENT_BODY" }
+              "comment": { "body": "[GITHUB_ISSUE_COMMENT]\n\n$ISSUE_COMMENT_BODY" }
             }
           }
           DATA

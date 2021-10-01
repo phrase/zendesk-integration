@@ -1,0 +1,42 @@
+# Will be run to push an issue comment to zendesk ticket
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  issue_commented:
+    name: Issue comment
+    if: ${{ !github.event.issue.pull_request }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Comment on issue #${{ github.event.issue.number }}"
+      - id: get_ticket
+        env:
+          ZENDESK_BASIC_AUTH: ${{secrets.ZENDESK_BASIC_AUTH}}
+        run: |
+          ## get external id
+          external_id=$(echo "${{ github.event.html_url }}" | cut -d '#' -f1)
+
+          ## get ticket ID
+          tickets=$(curl "https://memsource.zendesk.com/api/v2/search.json?query=external_id:$external_id" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
+
+          # the following lines are only required for multi line json
+          tickets="${tickets//'%'/'%25'}"
+          tickets="${tickets//$'\n'/'%0A'}"
+          tickets="${tickets//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=tickets::$tickets"
+      - env:
+          ZENDESK_BASIC_AUTH: ${{secrets.ZENDESK_BASIC_AUTH}}
+          TICKET_NUMBER: ${{fromJson(steps.set_var.outputs.tickets).results[0].id}}
+        run: |
+          curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$TICKT_NUMBER -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
+          {
+            "ticket": {
+              "comment":   { "body": "${{ github.event.body }}" },
+            }
+          }
+          DATA
+
+          echo "Zendesk ticket commented"
+

@@ -1,0 +1,31 @@
+# Will be run to create a zendesk ticket out of a issue
+on:
+  issues:
+    types: [opened]
+jobs:
+  issue_created:
+    name: Issue created
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          ZENDESK_BASIC_AUTH: ${{secrets.ZENDESK_BASIC_AUTH}}
+        run: |
+          echo "Issue #${{ github.event.number }}"
+
+          curl -X POST https://memsource.zendesk.com/api/v2/tickets -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
+          {
+            "ticket": {
+              "subject":   "${{ github.event.title }}",
+              "comment":   { "body": "${{ github.event.body }}" },
+              "assignee_id": 383200172360,
+              "group_id": 360008131599,
+              "brand_id": 360002503940,
+              "tags": ["phrase"],
+              "external_id": "${{ github.event.html_url }}",
+              "requester": { "locale_id": 1, "name": "${{ github.event.user.login }}" }
+            }
+          }
+          DATA
+
+          echo "Zendesk ticket created"
+

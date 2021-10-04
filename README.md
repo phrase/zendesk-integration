@@ -47,8 +47,8 @@ This can either be done through their interface or through the api. The followin
       "type": "bearer_token",
       "add_position": "header",
       "data":{
-          "token":"<TOKEN>",
-      },
+        "token":"<TOKEN>"
+      }
     }
   }
 }

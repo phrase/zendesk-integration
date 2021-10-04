@@ -25,14 +25,16 @@ jobs:
 
           echo "Commenting Zendesk ticket $ticket_number"
 
+          users=$(curl "https://memsource.zendesk.com/api/v2/users/search.json?query=$ISSUE_USER from Github" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
+          userId=$(echo $users | jq '.users[0].id')
+
           body=$(jq -n --arg body "$ISSUE_COMMENT_BODY" '{body: $body}' | jq .body)
           echo "$body"
 
           curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$ticket_number -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
-              "comment": { "body": "[GITHUB_ISSUE_COMMENT]\n\n${body:1:-1}" },
-              "requester": { "locale_id": 1, "name": "$ISSUE_USER from Github" }
+              "comment": { "body": "[GITHUB_ISSUE_COMMENT]\n\n${body:1:-1}", author_id: $userId }
             }
           }
           DATA

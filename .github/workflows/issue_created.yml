@@ -28,7 +28,7 @@ jobs:
               "brand_id": 360002503940,
               "tags": ["phrase"],
               "external_id": "$ISSUE_URL",
-              "requester": { "locale_id": 1, "name": "$ISSUE_USER from Github" }
+              "requester": { "locale_id": 1, "name": "$ISSUE_USER from Github", email: "$ISSUE_USER@users.noreply.github.com" }
             }
           }
           DATA

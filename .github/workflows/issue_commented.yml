@@ -28,7 +28,7 @@ jobs:
           echo "Commenting Zendesk ticket $ticket_number"
 
           echo "Looking up user by issuer: $ISSUE_USER"
-          users=$(curl "https://memsource.zendesk.com/api/v2/users/search.json?query=$ISSUE_USER from Github" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
+          users=$(curl "https://memsource.zendesk.com/api/v2/users/search.json?query=$ISSUE_USER@users.noreply.github.com" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
           user_id=$(echo $users | jq '.users[0].id')
           echo $user_id
 

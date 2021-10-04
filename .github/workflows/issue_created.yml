@@ -2,6 +2,11 @@
 on:
   issues:
     types: [opened]
+  workflow_call:
+    secrets:
+      ZENDESK_BASIC_AUTH:
+        description: 'The zendesk basic auth token for authentification. See https://support.zendesk.com/hc/en-us/articles/115000510267-How-can-I-authenticate-API-requests-#heading2'
+        required: true
 jobs:
   issue_created:
     name: Issue created

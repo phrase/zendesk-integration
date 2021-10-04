@@ -122,7 +122,7 @@ on:
     types: [opened]
 jobs:
   issue_created:
-    uses: <GITHUB_ORG>/<GITHUB_REPO>/.github/workflows/issue_created.yml@main
+    uses: phrase/zendesk-integration/.github/workflows/issue_created.yml@main
 ```
 
 
@@ -132,8 +132,5 @@ on:
     types: [created]
 jobs:
   issue_created:
-    uses: <GITHUB_ORG>/<GITHUB_REPO>/.github/workflows/issue_commented.yml@main
+    uses: phrase/zendesk-integration/.github/workflows/issue_commented.yml@main
 ```
-
-
-`<GITHUB_ORG>` and `<GITHUB_REPO>` needs to be replaced with real data.

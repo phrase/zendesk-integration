@@ -17,16 +17,20 @@ jobs:
           ZENDESK_BASIC_AUTH: ${{ secrets.ZENDESK_BASIC_AUTH }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
           ISSUE_COMMENT_BODY: ${{ github.event.comment.body }}
-          ISSUE_USER: ${{ github.event.user.login }}
+          ISSUE_USER: ${{ github.event.comment.user.login }}
         run: |
           ## add comment to zendesk ticket
+          echo "Looking up ticket by issue: $ISSUE_URL"
           tickets=$(curl "https://memsource.zendesk.com/api/v2/search.json?query=external_id:$ISSUE_URL" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
           ticket_number=$(echo $tickets | jq '.results[0].id')
+          echo $ticket_number
 
           echo "Commenting Zendesk ticket $ticket_number"
 
+          echo "Looking up user by issuer: $ISSUE_USER"
           users=$(curl "https://memsource.zendesk.com/api/v2/users/search.json?query=$ISSUE_USER from Github" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
-          userId=$(echo $users | jq '.users[0].id')
+          user_id=$(echo $users | jq '.users[0].id')
+          echo $user_id
 
           body=$(jq -n --arg body "$ISSUE_COMMENT_BODY" '{body: $body}' | jq .body)
           echo "$body"
@@ -34,7 +38,7 @@ jobs:
           curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$ticket_number -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
-              "comment": { "body": "[GITHUB_ISSUE_COMMENT]\n\n${body:1:-1}", "author_id": $userId }
+              "comment": { "body": "[GITHUB_ISSUE_COMMENT]\n\n${body:1:-1}", "author_id": $user_id }
             }
           }
           DATA

@@ -17,6 +17,7 @@ jobs:
           ZENDESK_BASIC_AUTH: ${{ secrets.ZENDESK_BASIC_AUTH }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
           ISSUE_COMMENT_BODY: ${{ github.event.comment.body }}
+          ISSUE_USER: ${{ github.event.comment.user.login }}
         run: |
           ## add comment to zendesk ticket
           tickets=$(curl "https://memsource.zendesk.com/api/v2/search.json?query=external_id:$ISSUE_URL" -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json")
@@ -30,7 +31,8 @@ jobs:
           curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$ticket_number -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
-              "comment": { "body": "[GITHUB_ISSUE_COMMENT]\n\n${body:1:-1}" }
+              "comment": { "body": "[GITHUB_ISSUE_COMMENT]\n\n${body:1:-1}" },
+              "requester": { "locale_id": 1, "name": "$ISSUE_USER from Github" }
             }
           }
           DATA

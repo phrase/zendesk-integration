@@ -123,6 +123,8 @@ on:
 jobs:
   issue_created:
     uses: phrase/zendesk-integration/.github/workflows/issue_created.yml@main
+    secrets:
+      ZENDESK_BASIC_AUTH: ${{ secrets.ZENDESK_BASIC_AUTH }}
 ```
 
 
@@ -133,4 +135,6 @@ on:
 jobs:
   issue_created:
     uses: phrase/zendesk-integration/.github/workflows/issue_commented.yml@main
+    secrets:
+      ZENDESK_BASIC_AUTH: ${{ secrets.ZENDESK_BASIC_AUTH }}
 ```

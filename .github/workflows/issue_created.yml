@@ -39,13 +39,3 @@ jobs:
           DATA
 
           echo "Zendesk ticket created"
-      - uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: "Our technical support team got notified and will get in touch with you."
-            })
-

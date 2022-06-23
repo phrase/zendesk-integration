@@ -9,8 +9,8 @@ jobs:
       issues: write
     steps:
       - uses: actions/github-script@v5
+        id: get-comment
         with:
-          github-token: ${{ secrets.ACCESS_TOKEN }}
           script: |
             // copy zendesk comment to issue
             payload = context.payload.client_payload
@@ -20,10 +20,15 @@ jobs:
             issue_number = parts[parts.length - 1]
             issue_repo = parts[parts.length - 3]
             issue_owner = parts[parts.length - 4]
+            body = `${payload.comment.body}\n\n*Comment by ${payload.comment.author}*`
 
-            github.rest.issues.createComment({
-              issue_number: issue_number,
-              owner: issue_owner,
-              repo: issue_repo,
-              body: `${payload.comment.body}\n\n*Comment by ${payload.comment.author}*`
-            })
+            echo "::set-output name=issue_number::$issue_number"
+            echo "::set-output name=issue_repo::$issue_repo"
+            echo "::set-output name=issue_owner::$issue_owner"
+            echo "::set-output name=body::$body"
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@b95e16d2859ad843a14218d1028da5b2c4cbc4b4
+        with:
+          issue-number: ${{ steps.get-comment-body.outputs.issue_number }}
+          repository: ${{ steps.get-comment-body.outputs.issue_repo }}
+          body: ${{ steps.get-comment-body.outputs.body }}

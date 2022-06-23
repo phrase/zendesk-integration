@@ -16,7 +16,7 @@ jobs:
             // split external id to get owner, repo and issue number
             parts = payload.ticket.external_id.split("/")
 
-            issue_repo = parts[parts.length - 3]
+            $issue_repo = parts[parts.length - 3]
 
             return $issue_repo
       - name: Repository Dispatch

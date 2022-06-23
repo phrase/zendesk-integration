@@ -25,4 +25,4 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           repository: ${{ steps.repo-set.outputs.result }}
           event-type: zendesk
-          client-payload: ${{ github.event.client_payload }}
+          client-payload: ${{ toJson(github.event.client_payload) }}

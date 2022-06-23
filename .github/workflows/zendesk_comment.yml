@@ -2,6 +2,11 @@ on:
   repository_dispatch:
     types:
       - zendesk
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        description: 'The github token used to create the comment. By default workflow token is used.'
+        required: false
 jobs:
   comment:
     runs-on: ubuntu-latest

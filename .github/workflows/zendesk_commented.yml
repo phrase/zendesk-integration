@@ -10,6 +10,7 @@ jobs:
     steps:
       - uses: actions/github-script@v5
         with:
+          github-token: ${{ secrets.ACCESS_TOKEN }}
           script: |
             // copy zendesk comment to issue
             payload = context.payload.client_payload

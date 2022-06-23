@@ -1,28 +1,26 @@
 on:
   repository_dispatch:
     types:
-      - zendesk-comment
+      - zendesk
 jobs:
   comment:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v5
-        id: repo-set
         with:
-          result-encoding: string
           script: |
             // copy zendesk comment to issue
             payload = context.payload.client_payload
             // split external id to get owner, repo and issue number
             parts = payload.ticket.external_id.split("/")
 
+            issue_number = parts[parts.length - 1]
             issue_repo = parts[parts.length - 3]
+            issue_owner = parts[parts.length - 4]
 
-            return $issue_repo
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@c73dcc42429d4220d60b2b8daf3cee190a131129
-        with:
-          token: ${{ secrets.ACCESS_TOKEN }}
-          repository: ${{ steps.repo-set.outputs.result }}
-          event-type: zendesk
-          client-payload: ${{ github.event.client_payload }}
+            github.rest.issues.createComment({
+              issue_number: issue_number,
+              owner: issue_owner,
+              repo: issue_repo,
+              body: `${payload.comment.body}\n\n*Comment by ${payload.comment.author}*`
+            })

@@ -1,9 +1,10 @@
 # zendesk-integration
 
-The zendesk github integration consist of 3 github actions.
+The zendesk github integration consist of 4 github actions.
 
 - [issue_created.yml](blob/main/.github/workflows/issue_created.yml)
 - [issue_commented.yml](blob/main/.github/workflows/issue_commented.yml)
+- [zendesk_comment.yml](blob/main/.github/workflows/zendesk_comment.yml)
 - [zendesk_commented.yml](blob/main/.github/workflows/zendesk_commented.yml)
 
 In addition, within zendesk there needs to be a [Webhook](https://developer.zendesk.com/api-reference/event-connectors/webhooks/webhooks/#create-or-clone-webhook) and a [Trigger](https://developer.zendesk.com/api-reference/ticketing/business-rules/triggers/#create-trigger) configured.
@@ -110,11 +111,21 @@ They should not be removed but can be changed to anything - just make sure to al
 ## Integration
 
 One important notice: This setup requires only one *global* `zendesk_commented` github action (only once) while the
-`issue_commented` and `issue_created` github actions needs to be added to every repository where the issues should
+`zendesk_comment`, `issue_commented` and `issue_created` github actions needs to be added to every repository where the issues should
 get synced to zendesk.
 
 The workflow can also be reused via [Calling a reusable workflow](https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#calling-a-reusable-workflow)
 to only have one place for the integration code.
+
+```
+on:
+  repository_dispatch:
+    types:
+      - zendesk
+jobs:
+  zendesk_comment:
+    uses: phrase/zendesk-integration/.github/workflows/zendesk_comment.yml@main
+```
 
 ```
 on:

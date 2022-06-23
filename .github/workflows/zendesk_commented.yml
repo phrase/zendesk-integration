@@ -19,7 +19,7 @@ jobs:
             $issue_repo = parts[parts.length - 3]
             $issue_owner = parts[parts.length - 4]
 
-            return `$issue_owner/$issue_repo`
+            return $issue_owner + "/" + $issue_repo
       - name: Repository Dispatch
         uses: peter-evans/repository-dispatch@c73dcc42429d4220d60b2b8daf3cee190a131129
         with:

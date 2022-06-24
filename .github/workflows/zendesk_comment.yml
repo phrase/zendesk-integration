@@ -18,10 +18,12 @@ jobs:
             issue_number = parts[parts.length - 1]
             issue_repo = parts[parts.length - 3]
             issue_owner = parts[parts.length - 4]
+            
+            comment_author = payload.comment.author.split(" ")[0]
 
             github.rest.issues.createComment({
               issue_number: issue_number,
               owner: issue_owner,
               repo: issue_repo,
-              body: `${payload.comment.body}\n\n*Comment by ${payload.comment.author}*`
+              body: `${payload.comment.body}\n\n*Comment by ${comment_author}*`
             })

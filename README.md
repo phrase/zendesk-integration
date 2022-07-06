@@ -1,13 +1,15 @@
 # zendesk-integration
 
-The zendesk github integration consist of 4 github actions.
+The zendesk github integration consist of 6 github actions.
 
 - [issue_created.yml](blob/main/.github/workflows/issue_created.yml)
 - [issue_commented.yml](blob/main/.github/workflows/issue_commented.yml)
 - [zendesk_comment.yml](blob/main/.github/workflows/zendesk_comment.yml)
 - [zendesk_commented.yml](blob/main/.github/workflows/zendesk_commented.yml)
+- [zendesk_solve.yml](blob/main/.github/workflows/zendesk_solve.yml)
+- [zendesk_solved.yml](blob/main/.github/workflows/zendesk_solved.yml)
 
-In addition, within zendesk there needs to be a [Webhook](https://developer.zendesk.com/api-reference/event-connectors/webhooks/webhooks/#create-or-clone-webhook) and a [Trigger](https://developer.zendesk.com/api-reference/ticketing/business-rules/triggers/#create-trigger) configured.
+In addition, within zendesk there needs to be a [Webhook](https://developer.zendesk.com/api-reference/event-connectors/webhooks/webhooks/#create-or-clone-webhook) and two [Triggers](https://developer.zendesk.com/api-reference/ticketing/business-rules/triggers/#create-trigger) configured.
 
 ## Github actions
 
@@ -57,9 +59,11 @@ This can either be done through their interface or through the api. The followin
 
 `<GITHUB_ORG>`, `<GITHUB_REPO>` and `<TOKEN>` needs to be replaced with real data.
 
-### Trigger
+### Triggers
 
 The webhook itself does not get triggered automatically in zendesk. For this, a `Trigger` needs to be defined.
+
+#### Trigger for comments
 
 ```json
 {
@@ -99,6 +103,41 @@ The webhook itself does not get triggered automatically in zendesk. For this, a 
 }
 ```
 
+#### Trigger for solving issue
+
+```json
+{
+  "trigger": {
+    "title": "Zendesk closing Github issues",
+    "actions": [
+      {
+        "field": "notification_webhook",
+        "value": [
+          "<ZENDESK_WEBHOOK_ID>",
+          "{\"event_type\": \"zendesk-solved\", \"client_payload\": { \"ticket\": {\"id\": \"{{ticket.id}}\",\"external_id\": \"{{ticket.external_id}}\"}}}}"
+        ]
+      }
+    ],
+    "conditions": {
+      "all": [
+        {
+          "field": "status",
+          "operator": "is",
+          "value": "solved"
+        },
+        {
+          "field": "subject_includes_word",
+          "operator": "includes",
+          "value": "Github_Issue"
+        }
+      ],
+      "any": []
+    },
+    "description": "#zendesk-github-issue-solving",
+  }
+}
+```
+
 `<ZENDESK_WEBHOOK_ID>` needs to be replaced with the real ID of the new generated webhook.
 Additional conditions can be set to e.g. limit tickets to specific organizations or categories.
 
@@ -110,8 +149,8 @@ They should not be removed but can be changed to anything - just make sure to al
 
 ## Integration
 
-One important notice: This setup requires only one *global* `zendesk_commented` github action (only once) while the
-`zendesk_comment`, `issue_commented` and `issue_created` github actions needs to be added to every repository where the issues should
+One important notice: This setup requires only one *global* `zendesk_commented` and one *global* `zendesk_solved` github action (only once) while the
+`zendesk_comment`, `zendesk_solve`, `issue_commented` and `issue_created` github actions needs to be added to every repository where the issues should
 get synced to zendesk.
 
 The workflow can also be reused via [Calling a reusable workflow](https://docs.github.com/en/actions/learn-github-actions/reusing-workflows#calling-a-reusable-workflow)
@@ -125,6 +164,16 @@ on:
 jobs:
   zendesk_comment:
     uses: phrase/zendesk-integration/.github/workflows/zendesk_comment.yml@main
+```
+
+```
+on:
+  repository_dispatch:
+    types:
+      - zendesk-solving-issue
+jobs:
+  zendesk_comment:
+    uses: phrase/zendesk-integration/.github/workflows/zendesk_solve.yml@main
 ```
 
 ```

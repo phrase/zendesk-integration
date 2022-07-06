@@ -1,7 +1,7 @@
 on:
   repository_dispatch:
     types:
-      - zendesk-comment
+      - zendesk-solved
 jobs:
   comment:
     runs-on: ubuntu-latest
@@ -25,5 +25,5 @@ jobs:
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
           repository: ${{ steps.repo-set.outputs.result }}
-          event-type: zendesk
+          event-type: zendesk-solving-issue
           client-payload: ${{ toJson(github.event.client_payload) }}

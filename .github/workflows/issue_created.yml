@@ -27,7 +27,7 @@ jobs:
           {
             "ticket": {
               "subject":   "Github_Issue: $ISSUE_TITLE",
-              "comment":   { "body": "[GITHUB_ISSUE_COMMENT]\n\n${body:1:-1}" },
+              "comment":   { "body": "[GITHUB_ISSUE_COMMENT]\n\n${body:1:-1}\n\nGITHUB ISSUE URL: $ISSUE_URL" },
               "assignee_id": 383200172360,
               "group_id": 360008131599,
               "brand_id": 360002503940,

@@ -38,12 +38,19 @@ jobs:
           echo $user_id
 
           body=$(jq -n --arg body "$ISSUE_COMMENT_BODY" '{body: $body}' | jq .body)
+          body=${body:1:-1}
           echo "$body"
+
+          if [[ "$user_id" == "null" ]]; then
+            echo "Fall back to generic github user"
+            user_id="388861316959"
+            body="$body\n\nComment by $ISSUE_USER"
+          fi
 
           curl -X PUT https://memsource.zendesk.com/api/v2/tickets/$ticket_number -H "Authorization: Basic $ZENDESK_BASIC_AUTH" -H "Content-Type: application/json" --data-binary @- <<DATA
           {
             "ticket": {
-              "comment": { "body": "[GITHUB_ISSUE_COMMENT]\n\n${body:1:-1}", "author_id": $user_id }
+              "comment": { "body": "[GITHUB_ISSUE_COMMENT]\n\n$body", "author_id": $user_id }
             }
           }
           DATA
